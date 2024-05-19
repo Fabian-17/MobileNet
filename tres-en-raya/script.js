@@ -3,9 +3,11 @@ tf.ready().then(() => {
     tf.tidy(() => {
       tf.loadLayersModel(rutaModelo).then((modelo) => {
         let tablero = tf.zeros([9]).arraySync(); // Inicializa el tablero vacío
+        let juegoTerminado = false; // Variable para verificar si el juego ha terminado
   
         const celdas = document.querySelectorAll('.celda');
         const mensajeDiv = document.querySelector('.mensaje');
+        const botonReiniciar = document.querySelector('.reiniciar');
   
         // Función para renderizar el tablero
         function renderizarTablero() {
@@ -67,6 +69,7 @@ tf.ready().then(() => {
             let ganador = verificarGanador(tablero);
             if (ganador !== null) {
               mensajeDiv.textContent = ganador === 'Empate' ? '¡El juego es un empate!' : `¡Jugador ${ganador === 1 ? 'O' : 'X'} gana!`;
+              botonReiniciar.style.display = 'block';
               return;
             }
   
@@ -78,7 +81,9 @@ tf.ready().then(() => {
   
             ganador = verificarGanador(tablero);
             if (ganador !== null) {
+                juegoTerminado = true;
               mensajeDiv.textContent = ganador === 'Empate' ? '¡El juego es un empate!' : `¡Jugador ${ganador === 1 ? 'O' : 'X'} gana!`;
+                botonReiniciar.style.display = 'block';
             }
           }
         }
@@ -90,6 +95,17 @@ tf.ready().then(() => {
             movimientoUsuario(indice);
           });
         });
+              // Función para reiniciar el juego
+      function reiniciarJuego() {
+        tablero = tf.zeros([9]).arraySync(); // Reinicia el tablero vacío
+        juegoTerminado = false; // Reinicia el estado del juego
+        mensajeDiv.textContent = ''; // Limpia el mensaje
+        botonReiniciar.style.display = 'none'; // Oculta el botón de reinicio
+        renderizarTablero(); // Renderiza el tablero inicial
+      }
+
+      // Añade un evento de clic al botón de reinicio
+      botonReiniciar.addEventListener('click', reiniciarJuego);
       });
     });
   });  
